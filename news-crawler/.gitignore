@@ -1,5 +1,5 @@
 .env
-data/
+# data/
 _test*/
 *.sentiment_cache.jsonl
 node_modules/

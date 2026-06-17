@@ -1,0 +1,4 @@
+date,war_n,war_sent_mean,war_sent_sum,war_intensity,political_economy_n,political_economy_sent_mean,political_economy_sent_sum,political_economy_intensity,natural_disaster_n,natural_disaster_sent_mean,natural_disaster_sent_sum,natural_disaster_intensity,all_n,all_sent_mean,all_sent_sum,all_intensity
+2026-04-30,0,0.0000,0.0000,0.0000,5,-0.0400,-0.2000,0.4000,0,0.0000,0.0000,0.0000,5,-0.0400,-0.2000,0.4000
+2026-05-01,0,0.0000,0.0000,0.0000,6,0.0333,0.2000,1.4000,0,0.0000,0.0000,0.0000,6,0.0333,0.2000,1.4000
+2026-05-02,0,0.0000,0.0000,0.0000,5,-0.0400,-0.2000,2.0000,0,0.0000,0.0000,0.0000,5,-0.0400,-0.2000,2.0000
