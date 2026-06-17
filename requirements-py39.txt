@@ -1,0 +1,33 @@
+# ============================================================
+# XANG_DAU_FORECAST — Python 3.9.x full stack
+# Conflict-checked: TensorFlow 2.17 + PyTorch 2.3 + neuralforecast coexist.
+# The repo's tf.keras models run under Keras-2 via `tf-keras` (see notebooks:
+# TF_USE_LEGACY_KERAS=1 is set before importing tensorflow).
+# ============================================================
+
+# --- core scientific ---
+numpy>=1.26,<2.0
+pandas>=2.1,<2.3
+scipy>=1.11,<1.14
+scikit-learn>=1.3,<1.6
+statsmodels>=0.14,<0.15
+matplotlib>=3.7,<3.10
+seaborn>=0.12,<0.14
+
+# --- classical / boosting models ---
+lightgbm>=4.1,<4.6
+optuna>=3.4
+
+# --- deep learning (Keras + PyTorch) ---
+tensorflow>=2.16,<2.18
+tf-keras>=2.16,<2.18          # Keras-2 API for src/models (iTransformer, GUMNet)
+torch>=2.2,<2.4               # CPU build (Windows default from PyPI)
+neuralforecast>=1.7,<1.8      # PatchTST + TFT
+
+# --- news sentiment scoring (optional) ---
+openai>=1.30
+
+# --- jupyter ---
+notebook
+ipykernel
+nbformat
