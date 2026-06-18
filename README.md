@@ -311,9 +311,11 @@ Oil-Forecasting/
 
 ## Contact
 
-Mọi thắc mắc hoặc nhu cầu hợp tác nghiên cứu vui lòng liên hệ các tác giả của đồ án:
+For more details, reach out to:
 
 * **Nguyễn Hữu Tuấn Phát** - Email: [tuanphatnguyenhuu@gmail.com](mailto:tuanphatnguyenhuu@gmail.com)
 * **Trần Mạnh Hùng**
 * **Nguyễn Phước Toàn**
-* **Giảng viên hướng dẫn**: TS. Hoàng Văn Quý
+* **Supervising lecturer**: Dr. Hoàng Văn Quý
+
+
