@@ -1,16 +1,26 @@
-# Virtual environments
-.venv/
-.venv
-.venv*/
-.venv39/
-
-# Python bytecode
+# Python
 __pycache__/
-*.py[cod]
-*$py.class
+*.pyc
+.venv39/
+.venv/
+*.egg-info/
 
-# Jupyter
-.ipynb_checkpoints/
+# ML training artifacts
+catboost_info/
+lightning_logs/
+notebooks/catboost_info/
+notebooks/lightning_logs/
+notebooks/.ipynb_checkpoints/
 
-# VS Code
-.vscode/
+# Node
+node_modules/
+
+# News crawler local
+news-crawler/.env
+news-crawler/data/
+news-crawler/*.sentiment_cache.jsonl
+news-crawler/err.txt
+
+# OS
+.DS_Store
+Thumbs.db
