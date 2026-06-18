@@ -24,3 +24,7 @@ news-crawler/err.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# Report source files (publish PDF only)
+*.docx
+~$*.docx
