@@ -27,9 +27,8 @@ The motivation is practical: refined-fuel prices track crude with a lag and a re
 blends a strong linear backbone (ARIMAX) with a non-linear residual learner (CatBoost), gated by
 recent volatility, captures both the smooth co-movement and the shock-driven jumps.
 
-*(All work is reproducible from the staged dataset and the `src/` pipeline; the notebooks
-`01`–`05` document EDA, baseline modeling, the full model suite, the multi-horizon study, and
-champion-improvement experiments.)*
+*(All work is reproducible from the staged dataset and the `src/` pipeline; notebooks `01`–`04`
+document EDA, baseline modeling, the full model suite, and the multi-horizon study.)*
 
 ---
 
@@ -127,13 +126,8 @@ Three families plus a hybrid champion, all evaluated on the same test window and
 |---|---|
 | **Statistical** | ARIMAX, SARIMA (rolling one-step / H-step via `extend`) |
 | **Linear / tree** | Ridge / Linear Regression, LightGBM (Optuna-tuned); Logistic Regression for up/down direction |
-| **Deep learning** | LSTM, iTransformer (inverted attention), GUMNet-Lite & GUMNet-Ultra (gated CNN-BiGRU mixture-of-experts), PatchTST, TFT |
+| **Deep learning** | LSTM, iTransformer (inverted attention), GUMNet-Lite & GUMNet-Ultra (gated CNN-BiGRU mixture-of-experts) |
 | **Champion (hybrid)** | **Jump-Gated ARIMAX → CatBoost**: ARIMAX gives the linear + exogenous forecast, CatBoost learns the non-linear **residual**, and a **Jump Gate** (sigmoid of recent-volatility z-score) controls how much residual correction to apply during turbulent periods |
-
-**Champion-improvement experiments (Notebook 05)** add five residual-side techniques on top of the
-champion: (1) **LSH** analog residuals, (2) **SAX + date→text + Log-Transform Hashing**, (3)
-**Topological Data Analysis** (sublevel-set persistence + Takens embedding — "Sequence" + "Star"),
-(4) **B-spline** basis with automatic quantile knots, and (5) an **NNLS stacking ensemble**.
 
 ---
 
@@ -145,8 +139,7 @@ champion: (1) **LSH** analog residuals, (2) **SAX + date→text + Log-Transform 
 | **Data** | pandas, numpy, scipy |
 | **Statistical** | statsmodels (SARIMAX) |
 | **ML** | scikit-learn, LightGBM, CatBoost, Optuna |
-| **Deep learning** | TensorFlow / Keras (LSTM, iTransformer, GUMNet); PyTorch + neuralforecast (PatchTST, TFT) |
-| **Signal / topology** | scipy splines & MST, custom SAX / LSH / sublevel-persistence |
+| **Deep learning** | TensorFlow / Keras (LSTM, iTransformer, GUMNet) |
 | **News sentiment** | OpenAI client → MiniMax-M3 (via TokenRouter) |
 | **Viz** | matplotlib, seaborn |
 
@@ -177,33 +170,7 @@ MAE (lower is better) / R² (higher is better) by horizon:
 | GUMNet-Ultra (best DL) | 4.179 / 0.827 | 5.692 / 0.611 | 8.819 / 0.269 | 11.42 / 0.087 | 10.71 / −0.38 |
 | LSTM | 4.226 / 0.777 | 5.653 / 0.579 | 7.360 / 0.277 | 9.345 / 0.100 | 18.01 / −1.53 |
 
-### 7.2 Champion-improvement experiments
-
-Notebook 05 stress-tests five residual-side enhancements on a **harder evaluation setup** (ARIMAX
-fit on the first 50% and rolled H-step over the remaining ~50% — a much longer test window than
-nb04's last-10%). Scores are therefore higher than nb04 and **not directly comparable**; this
-notebook ranks *which enhancement helps*, not the headline accuracy.
-
-The winner shifts with horizon: the **ensemble** edges H=1, the **Jump-Gated base** wins H=5, and
-**B-spline (auto knots)** dominates the long horizons (H=10/30/60) — confirming that the topological
-/ basis features pay off in the shock-driven, longer-horizon regime. **LSH consistently hurts.**
-
-![Improvement experiments](docs/images/results_improvements.png)
-
-Best MAE per horizon (Notebook 05 setup):
-
-| Horizon | Best technique | MAE | R² |
-|---|---|---|---|
-| H=1 | (5) Ensemble (NNLS stack) | 1.434 | 0.974 |
-| H=5 | Jump-Gated ARIMAX-CatBoost (base) | 2.915 | 0.902 |
-| H=10 | (4) B-spline (auto) | 3.819 | 0.802 |
-| H=30 | (4) B-spline (auto) | 6.028 | 0.518 |
-| H=60 | (4) B-spline (auto) | 6.654 | 0.485 |
-
-> The single best result of the whole project remains **Notebook 04's Jump-Gated ARIMAX-CatBoost at
-> H=1 (MAE 1.2571, R² 0.9779)** — nb05's numbers come from a deliberately harder rolling setup.
-
-### 7.3 Four-target summary
+### 7.2 Four-target summary
 
 R² / MAPE(%) on the test set, full `main.py` pipeline:
 
@@ -223,8 +190,8 @@ R² / MAPE(%) on the test set, full `main.py` pipeline:
   decay but structure still exists.
 - **Signal decays sharply with horizon** - R² falls from ~0.98 (H=1) to ~0.49 (H=60). Beyond ~30
   days the series is close to a random walk and all models converge toward the naive baseline.
-- **News + topological / symbolic features** give marginal H=1 gains but are aimed at the
-  shock-driven tail; their value grows at longer horizons and in crisis windows.
+- **News features** provide additional market context, but their contribution depends on coverage
+  and the delay between an event and a domestic price adjustment.
 
 ---
 
@@ -240,7 +207,7 @@ Oil-Forecasting/
 ├── verify_env.py              environment checker
 ├── data/processed/            clean_data_exo_ver1.csv (market + macro panel)
 ├── src/                       data_loader, features, evaluation, models/
-├── notebooks/                 01 EDA - 02 baseline - 03 all-models - 04 multi-horizon - 05 champion-improvements
+├── notebooks/                 01 EDA - 02 baseline - 03 all-models - 04 multi-horizon
 ├── news-crawler/              Node + Python news sentiment pipeline (crawl -> score -> aggregate)
 ├── results/                   metrics CSVs + charts/ (per-model & per-target)
 └── docs/images/               figures used in this report

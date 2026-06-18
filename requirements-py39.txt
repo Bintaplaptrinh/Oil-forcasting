@@ -32,3 +32,4 @@ openai>=1.30
 notebook
 ipykernel
 nbformat
+nbclient

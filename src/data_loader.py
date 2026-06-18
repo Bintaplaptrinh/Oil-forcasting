@@ -81,13 +81,15 @@ def load_and_engineer(data_path: str = None, target_col: str = TARGET) -> pd.Dat
 #  Multi-Horizon Target Creation
 # ------------------------------------------------------------------ #
 def make_multihorizon_targets(df: pd.DataFrame,
-                               horizons: list = [1, 5, 10]) -> pd.DataFrame:
+                               horizons: list = [1, 5, 10],
+                               target_col: str = TARGET) -> pd.DataFrame:
     """
-    Tao cac cot target MG95_H1, MG95_H5, MG95_H10 (gia tuong lai).
+    Tao cac cot target <target>_H1, <target>_H5, <target>_H10
+    (gia tuong lai).
     Su dung cho Multi-Horizon evaluation.
     """
     for h in horizons:
-        df[f"MG95_H{h}"] = df["MG95"].shift(-h)
+        df[f"{target_col}_H{h}"] = df[target_col].shift(-h)
     return df
 
 
