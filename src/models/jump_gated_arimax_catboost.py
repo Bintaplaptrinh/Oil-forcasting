@@ -1,7 +1,7 @@
 """
 jump_gated_arimax_catboost.py
 -----------------------------
-Hybrid model for one-step MG95 forecasting.
+Hybrid model for one-step fuel-price forecasting.
 
 Flow:
 1. ARIMAX predicts the base price level.

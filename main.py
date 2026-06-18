@@ -88,7 +88,8 @@ def main(optuna_trials: int = 100,
         yt_inv    = inverse_transform_y(y_test, scaler_y)
         yp_lgbm_inv = inverse_transform_y(pred_lgbm, scaler_y)
         res_lgbm  = compute_metrics(yt_inv, yp_lgbm_inv, name="LightGBM")
-        plot_actual_vs_predicted(test_dates, yt_inv, yp_lgbm_inv, "LightGBM", res_lgbm, save_path=f"{target_dir}/actual_vs_pred_LGBM.png")
+        plot_actual_vs_predicted(test_dates, yt_inv, yp_lgbm_inv, "LightGBM", res_lgbm,
+                                 save_path=f"{target_dir}/actual_vs_pred_LGBM.png", target=target)
 
         # --- 2. iTransformer ---
         print(f"\n[Optuna] Tuning iTransformer ({trials_dl} trials)...")
@@ -101,7 +102,8 @@ def main(optuna_trials: int = 100,
         pred_itf    = model_itf.predict(X_test, verbose=0).flatten()
         yp_itf_inv  = inverse_transform_y(pred_itf, scaler_y)
         res_itf     = compute_metrics(yt_inv, yp_itf_inv, name="iTransformer")
-        plot_actual_vs_predicted(test_dates, yt_inv, yp_itf_inv, "iTransformer", res_itf, save_path=f"{target_dir}/actual_vs_pred_iTF.png")
+        plot_actual_vs_predicted(test_dates, yt_inv, yp_itf_inv, "iTransformer", res_itf,
+                                 save_path=f"{target_dir}/actual_vs_pred_iTF.png", target=target)
 
         # --- 3. GUMNet-Ultra ---
         print(f"\n[Optuna] Tuning GUMNet-Ultra ({trials_dl} trials)...")
@@ -115,14 +117,15 @@ def main(optuna_trials: int = 100,
         pred_gum    = model_gum.predict(X_test, verbose=0).flatten()
         yp_gum_inv  = inverse_transform_y(pred_gum, scaler_y)
         res_gum     = compute_metrics(yt_inv, yp_gum_inv, name="GUMNet-Ultra")
-        plot_actual_vs_predicted(test_dates, yt_inv, yp_gum_inv, "GUMNet-Ultra", res_gum, save_path=f"{target_dir}/actual_vs_pred_GUMNet_Ultra.png")
+        plot_actual_vs_predicted(test_dates, yt_inv, yp_gum_inv, "GUMNet-Ultra", res_gum,
+                                 save_path=f"{target_dir}/actual_vs_pred_GUMNet_Ultra.png", target=target)
 
         # So sanh
         plot_model_comparison_bar([
             {**res_lgbm, "y_pred": yp_lgbm_inv}, 
             {**res_itf, "y_pred": yp_itf_inv}, 
             {**res_gum, "y_pred": yp_gum_inv}
-        ], save_path=f"{target_dir}/model_comparison.png")
+        ], save_path=f"{target_dir}/model_comparison.png", target=target)
 
         # --- 4. Walk-Forward (LightGBM) ---
         print(f"\n[Walk-Forward] LightGBM ({wf_folds} folds)...")
@@ -131,7 +134,8 @@ def main(optuna_trials: int = 100,
         y_all = np.concatenate([y_train, y_val, y_test])
         folds = walkforward_folds(n_total=n_total, n_pretrain=nt, n_folds=wf_folds)
         wf_out = walk_forward_lgbm(X_all, y_all, scaler_y, folds, best_lgbm, date_index)
-        plot_walkforward(wf_out["fold_results"], wf_out["summary"], save_path=f"{target_dir}/walk_forward.png")
+        plot_walkforward(wf_out["fold_results"], wf_out["summary"],
+                         save_path=f"{target_dir}/walk_forward.png", target=target)
 
         # --- 5. Multi-Horizon (GUMNet-Ultra chi test nhanh) ---
         print(f"\n[Multi-Horizon] LightGBM & GUMNet-Ultra {HORIZONS}...")
@@ -143,7 +147,8 @@ def main(optuna_trials: int = 100,
         horizon_data_lgbm = make_multihorizon_windows(X_sc_full, y_sc_full, time_steps=time_steps, horizons=HORIZONS)
         def lgbm_predict(Xte): return model_lgbm.predict(Xte.reshape(len(Xte), -1))
         df_mh_lgbm = evaluate_multihorizon(lgbm_predict, horizon_data_lgbm, scaler_y, n_train=nt, n_val=nv, model_name="LightGBM")
-        plot_multihorizon_bar(df_mh_lgbm, "LightGBM", save_path=f"{target_dir}/multihorizon_LGBM.png")
+        plot_multihorizon_bar(df_mh_lgbm, "LightGBM",
+                              save_path=f"{target_dir}/multihorizon_LGBM.png", target=target)
 
         rows_gum = []
         for h in HORIZONS:
@@ -167,7 +172,8 @@ def main(optuna_trials: int = 100,
             m["Horizon"] = h
             rows_gum.append(m)
         df_mh_gum = pd.DataFrame(rows_gum).set_index("Horizon")
-        plot_multihorizon_bar(df_mh_gum, "GUMNet-Ultra", save_path=f"{target_dir}/multihorizon_GUMNet_Ultra.png")
+        plot_multihorizon_bar(df_mh_gum, "GUMNet-Ultra",
+                              save_path=f"{target_dir}/multihorizon_GUMNet_Ultra.png", target=target)
 
         # Luu tong ket
         all_targets_results.append({
