@@ -225,33 +225,8 @@ MAE (lower is better) / R² (higher is better) by horizon:
 | GUMNet-Ultra (best DL) | 4.179 / 0.827 | 5.692 / 0.611 | 8.819 / 0.269 | 11.42 / 0.087 | 10.71 / −0.38 |
 | LSTM | 4.226 / 0.777 | 5.653 / 0.579 | 7.360 / 0.277 | 9.345 / 0.100 | 18.01 / −1.53 |
 
-### 7.2 Champion-improvement experiments
 
-Notebook 05 stress-tests five residual-side enhancements on a **harder evaluation setup** (ARIMAX
-fit on the first 50% and rolled H-step over the remaining ~50% — a much longer test window than
-nb04's last-10%). Scores are therefore higher than nb04 and **not directly comparable**; this
-notebook ranks *which enhancement helps*, not the headline accuracy.
-
-The winner shifts with horizon: the **ensemble** edges H=1, the **Jump-Gated base** wins H=5, and
-**B-spline (auto knots)** dominates the long horizons (H=10/30/60) — confirming that the topological
-/ basis features pay off in the shock-driven, longer-horizon regime. **LSH consistently hurts.**
-
-![Improvement experiments](docs/images/results_improvements.png)
-
-Best MAE per horizon (Notebook 05 setup):
-
-| Horizon | Best technique | MAE | R² |
-|---|---|---|---|
-| H=1 | (5) Ensemble (NNLS stack) | 1.434 | 0.974 |
-| H=5 | Jump-Gated ARIMAX-CatBoost (base) | 2.915 | 0.902 |
-| H=10 | (4) B-spline (auto) | 3.819 | 0.802 |
-| H=30 | (4) B-spline (auto) | 6.028 | 0.518 |
-| H=60 | (4) B-spline (auto) | 6.654 | 0.485 |
-
-> The single best result of the whole project remains **Notebook 04's Jump-Gated ARIMAX-CatBoost at
-> H=1 (MAE 1.2571, R² 0.9779)** — nb05's numbers come from a deliberately harder rolling setup.
-
-### 7.3 Four-target summary
+### 7.2 Four-target summary
 
 R² / MAPE(%) on the test set, full `main.py` pipeline:
 
