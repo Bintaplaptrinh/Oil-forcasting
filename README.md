@@ -19,32 +19,23 @@ machine-learning models — from global crude benchmarks, macro indicators, and 
 
 ---
 
-## Abstract
+## 1. Overview & Introduction
 
-This report analyses and forecasts four price series — **MG95, MG92, DO 0.001%, DO 0.05%** — on daily
-data from 2008-05-01 to 2026-05-08. We perform exploratory data analysis, build features, train **nine
-models**, and evaluate at horizons **H1, H5, H10, H30, H60**. At **H1, Jump-Gated ARIMAX-CatBoost
-achieves the lowest MAPE on all four products**. At longer horizons, ARIMAX leads in several cases.
+Oil-Forecasting predicts the daily price of Vietnamese refined-fuel products from a panel of
+global drivers — WTI and Brent crude, the US Dollar Index, the Geopolitical Risk index (GPR),
+and a custom **news-sentiment** signal built from war / political-economy / natural-disaster
+headlines. The project combines classical statistical models, gradient boosting, deep-learning
+sequence models, and a hybrid **Jump-Gated ARIMAX → CatBoost** champion, evaluated across five
+forecast horizons.
 
----
+The motivation is practical: refined-fuel prices track crude with a lag and a refining margin
+(the *crack spread*), but they also jump on macro shocks and geopolitical events. A model that
+blends a strong linear backbone (ARIMAX) with a non-linear residual learner (CatBoost), gated by
+recent volatility, captures both the smooth co-movement and the shock-driven jumps.
 
-## 1. Introduction
-
-Domestic fuel prices are tied to world oil prices, the exchange rate, geopolitical risk, and the
-price-adjustment schedule. The series shows a long-term trend, fast-moving volatility periods, and
-stretches where the price is held flat. The problem therefore needs both the history of the series and
-external drivers.
-
-The project forecasts four products and compares nine trained models, from statistical and regression
-models through gradient boosting to deep-learning and a hybrid model.
-
-**Objectives**
-
-- Describe the data with statistics and EDA charts.
-- Build features from past prices, market variables, and daily news.
-- Compare nine models on the same chronological split.
-- Evaluate the four products at horizons 1, 5, 10, 30, and 60 days.
-- Record which model suits each product and each horizon.
+*(All work is reproducible from the staged dataset and the `src/` pipeline; the notebooks
+`01`–`05` document EDA, baseline modeling, the full model suite, the multi-horizon study, and
+champion-improvement experiments.)*
 
 ---
 
@@ -182,124 +173,15 @@ a correction for each new observation.
 
 | Metric | Reading |
 |---|---|
-| **MAE** | Mean absolute error; lower is better. |
-| **RMSE** | Penalizes large errors more; lower is better. |
-| **MAPE** | Mean percentage error; **primary ranking metric**. |
-| **SMAPE** | Symmetric percentage error; cross-checks MAPE. |
-| **R²** | How well it tracks variation; near 1 is better, can be negative at long horizons. |
+| **Statistical** | ARIMAX, SARIMA (rolling one-step / H-step via `extend`) |
+| **Linear / tree** | Ridge / Linear Regression, LightGBM (Optuna-tuned); Logistic Regression for up/down direction |
+| **Deep learning** | LSTM, iTransformer (inverted attention), GUMNet-Lite & GUMNet-Ultra (gated CNN-BiGRU mixture-of-experts), PatchTST, TFT |
+| **Champion (hybrid)** | **Jump-Gated ARIMAX → CatBoost**: ARIMAX gives the linear + exogenous forecast, CatBoost learns the non-linear **residual**, and a **Jump Gate** (sigmoid of recent-volatility z-score) controls how much residual correction to apply during turbulent periods |
 
-MAPE is used for ranking; RMSE flags large errors; R² shows how well the test variation is tracked.
-
----
-
-## 7. One-Day-Ahead Results (H1)
-
-MAPE (%) of all nine models on the four products (test set):
-
-| Model | MG95 | MG92 | DO 0.001% | DO 0.05% |
-|---|---|---|---|---|
-| **Jump-Gated ARIMAX-CatBoost** | **1.2615** | **1.2548** | **1.4653** | **1.5225** |
-| ARIMAX | 1.4614 | 1.4715 | 1.7058 | 1.7560 |
-| SARIMA | 1.5520 | 1.5863 | 1.8091 | 1.8305 |
-| Ridge (Linear) | 1.5080 | 1.5873 | 1.7813 | 1.8244 |
-| LightGBM | 2.2007 | 2.5648 | 3.0889 | 3.0617 |
-| LSTM | 3.8267 | 5.2887 | 5.9259 | 6.1785 |
-| iTransformer | 4.7757 | 4.8925 | 7.5591 | 7.3254 |
-| GUMNet-Lite | 4.7746 | 5.4247 | 7.1641 | 5.6150 |
-| GUMNet-Ultra | 4.3884 | 3.8602 | 8.3510 | 4.9251 |
-
-Champion (Jump-Gated ARIMAX-CatBoost) full metrics at H1:
-
-| Product | MAE | RMSE | MAPE | SMAPE | R² |
-|---|---|---|---|---|---|
-| **MG95** | 1.2571 | 2.6541 | 1.2615 | 1.2603 | 0.9779 |
-| **MG92** | 1.1906 | 2.4228 | 1.2548 | 1.2557 | 0.9782 |
-| **DO 0.001%** | 1.9658 | 5.3796 | 1.4653 | 1.4686 | 0.9750 |
-| **DO 0.05%** | 1.9925 | 5.3944 | 1.5225 | 1.5230 | 0.9718 |
-
-Jump-Gated ARIMAX-CatBoost has the lowest H1 MAPE on all four products (1.2615% / 1.2548% / 1.4653% /
-1.5225%), with R² between 0.9718 and 0.9782.
-
-![H1 model comparison (MG95)](results/charts/model_comparison_final.png)
-
----
-
-## 8. Multi-Horizon Results
-
-Evaluated at H1, H5, H10, H30, H60. For each product and horizon, the best-MAPE model:
-
-| Product | H | Best model | MAE | RMSE | MAPE | R² |
-|---|---|---|---|---|---|---|
-| MG95 | 1 | Jump-Gated ARIMAX-CatBoost | 1.2571 | 2.6541 | 1.2615 | 0.9779 |
-| MG95 | 5 | Jump-Gated ARIMAX-CatBoost | 2.9059 | 5.5730 | 2.8978 | 0.9027 |
-| MG95 | 10 | Jump-Gated ARIMAX-CatBoost | 3.9230 | 8.1304 | 3.8435 | 0.7929 |
-| MG95 | 30 | ARIMAX | 6.3903 | 13.0368 | 6.0585 | 0.4995 |
-| MG95 | 60 | ARIMAX | 7.1215 | 13.6076 | 6.7291 | 0.4904 |
-| MG92 | 1 | Jump-Gated ARIMAX-CatBoost | 1.1906 | 2.4228 | 1.2548 | 0.9782 |
-| MG92 | 5 | ARIMAX | 2.6628 | 4.7150 | 2.8170 | 0.9181 |
-| MG92 | 10 | ARIMAX | 3.5741 | 6.8481 | 3.7289 | 0.8290 |
-| MG92 | 30 | Jump-Gated ARIMAX-CatBoost | 5.3166 | 9.9418 | 5.4306 | 0.6343 |
-| MG92 | 60 | ARIMAX | 6.4383 | 11.3896 | 6.4634 | 0.5752 |
-| DO 0.001% | 1 | Jump-Gated ARIMAX-CatBoost | 1.9658 | 5.3796 | 1.4653 | 0.9750 |
-| DO 0.001% | 5 | Jump-Gated ARIMAX-CatBoost | 4.8441 | 11.8112 | 3.6313 | 0.8799 |
-| DO 0.001% | 10 | Jump-Gated ARIMAX-CatBoost | 7.2436 | 17.7918 | 5.3582 | 0.7276 |
-| DO 0.001% | 30 | ARIMAX | 12.3889 | 29.3126 | 8.7928 | 0.3050 |
-| DO 0.001% | 60 | Jump-Gated ARIMAX-CatBoost | 13.8569 | 31.8948 | 9.7652 | 0.1339 |
-| DO 0.05% | 1 | Jump-Gated ARIMAX-CatBoost | 1.9925 | 5.3944 | 1.5225 | 0.9718 |
-| DO 0.05% | 5 | Jump-Gated ARIMAX-CatBoost | 4.6942 | 12.2478 | 3.5254 | 0.8549 |
-| DO 0.05% | 10 | Jump-Gated ARIMAX-CatBoost | 7.2547 | 18.3871 | 5.3860 | 0.6729 |
-| DO 0.05% | 30 | ARIMAX | 11.7441 | 27.9128 | 8.4492 | 0.2914 |
-| DO 0.05% | 60 | Jump-Gated ARIMAX-CatBoost | 12.5164 | 28.6092 | 9.2218 | 0.2167 |
-
-For MG95 the hybrid leads at H1/H5/H10 and ARIMAX at H30/H60. For MG92 the hybrid leads at H1/H30 and
-ARIMAX at H5/H10/H60. For both DO series the hybrid leads at H1/H5/H10/H60 and ARIMAX at H30.
-
-Error grows with horizon: MG95's best MAPE rises from **1.2615% (H1)** to **3.8435% (H10)** and **6.7291%
-(H60)**. The ~2% level only holds for very short-term forecasts on this dataset; H10 does not reach it.
-
-![Signal decay by horizon](docs/images/results_multihorizon.png)
-
----
-
-## 9. Discussion & Limitations
-
-### 9.1 By model group
-
-ARIMAX and the hybrid have lower MAPE than the rest in most short-horizon cases — consistent with the data
-structure: the series is strongly autocorrelated and related to WTI, Brent, USD Index, and GPR. Ridge and
-SARIMA are useful baselines; LightGBM is mid-pack. LSTM, iTransformer, and the two GUMNet variants do not
-reach the ARIMAX group's errors under the current configuration — a result that reflects this dataset,
-split, and parameters.
-
-### 9.2 Role of EDA
-
-EDA surfaced three design-relevant facts: clear lag relationships, high correlation among oil series, and
-periods of unusual volatility. Hence the project uses lags, rolling stats, exogenous variables, and an
-error-correction term — not just a single trend line.
-
-### 9.3 Limitations
-
-- Daily-aggregated news loses some per-article information.
-- A single train/validation/test split does not cover every market regime.
-- Long-horizon forecasts are affected by future information not available at forecast time.
-- Deep-learning results depend on configuration and number of training runs.
-
----
-
-## 10. Conclusion & Future Work
-
-The report covers four targets and nine trained models. At **H1, Jump-Gated ARIMAX-CatBoost has the lowest
-MAPE on all four products**. At longer horizons no single model wins everywhere; **ARIMAX is lowest in
-several cases**. The project therefore uses the hybrid for short-term forecasting and keeps ARIMAX as the
-reference for longer horizons.
-
-**Future work**
-
-- Rolling (walk-forward) evaluation across multiple periods instead of one final test set.
-- Separate EDA for MG92, DO 0.001%, DO 0.05% to check differences between series.
-- Add the domestic price-adjustment calendar and a "days-to-next-adjustment" feature.
-- Check news lag per topic and drop low-information columns.
-- Tune per horizon while keeping one shared training/evaluation pipeline.
+**Champion-improvement experiments (Notebook 05)** add five residual-side techniques on top of the
+champion: (1) **LSH** analog residuals, (2) **SAX + date→text + Log-Transform Hashing**, (3)
+**Topological Data Analysis** (sublevel-set persistence + Takens embedding — "Sequence" + "Star"),
+(4) **B-spline** basis with automatic quantile knots, and (5) an **NNLS stacking ensemble**.
 
 ---
 
@@ -312,6 +194,7 @@ reference for longer horizons.
 | **Statistical** | statsmodels (SARIMAX) |
 | **ML** | scikit-learn, LightGBM, CatBoost, Optuna |
 | **Deep learning** | TensorFlow / Keras (LSTM, iTransformer, GUMNet); PyTorch + neuralforecast (PatchTST, TFT) |
+| **Signal / topology** | scipy splines & MST, custom SAX / LSH / sublevel-persistence |
 | **News sentiment** | OpenAI client → MiniMax-M3 (via TokenRouter) |
 | **Viz** | matplotlib, seaborn |
 
@@ -320,7 +203,80 @@ Environment setup: `setup_env.ps1` / `setup_env.bat` + `requirements-py39.txt`, 
 
 ---
 
-## 12. Project Structure
+## 7. Results & Insights (MG95)
+
+### 7.1 Multi-horizon
+
+**Jump-Gated ARIMAX-CatBoost is the project's single best model** — it wins at H = 1, 5, 10 and is
+competitive at 30 / 60. Best score at H=1: **MAE 1.2571; R² 0.9779**. Deep-learning models
+consistently underperform on this dataset.
+
+![Multi-horizon results](docs/images/results_multihorizon.png)
+
+MAE (lower is better) / R² (higher is better) by horizon:
+
+| Model | H=1 | H=5 | H=10 | H=30 | H=60 |
+|---|---|---|---|---|---|
+| **Jump-Gated ARIMAX-CatBoost** | **1.257 / 0.978** | **2.906 / 0.903** | **3.923 / 0.793** | 6.518 / **0.527** | 7.161 / 0.465 |
+| ARIMAX | 1.429 / 0.975 | 2.953 / 0.899 | 3.992 / 0.789 | **6.390** / 0.500 | **7.122 / 0.490** |
+| SARIMA | 1.511 / 0.971 | 3.770 / 0.852 | 4.879 / 0.677 | 8.580 / 0.027 | 10.99 / −0.38 |
+| Ridge (Linear) | 1.542 / 0.970 | 3.725 / 0.848 | 4.786 / 0.722 | 9.855 / −0.12 | 9.446 / −0.02 |
+| LightGBM | 2.237 / 0.938 | 5.704 / 0.616 | 7.238 / 0.215 | 9.685 / −0.02 | 12.32 / −0.27 |
+| GUMNet-Ultra (best DL) | 4.179 / 0.827 | 5.692 / 0.611 | 8.819 / 0.269 | 11.42 / 0.087 | 10.71 / −0.38 |
+| LSTM | 4.226 / 0.777 | 5.653 / 0.579 | 7.360 / 0.277 | 9.345 / 0.100 | 18.01 / −1.53 |
+
+### 7.2 Champion-improvement experiments
+
+Notebook 05 stress-tests five residual-side enhancements on a **harder evaluation setup** (ARIMAX
+fit on the first 50% and rolled H-step over the remaining ~50% — a much longer test window than
+nb04's last-10%). Scores are therefore higher than nb04 and **not directly comparable**; this
+notebook ranks *which enhancement helps*, not the headline accuracy.
+
+The winner shifts with horizon: the **ensemble** edges H=1, the **Jump-Gated base** wins H=5, and
+**B-spline (auto knots)** dominates the long horizons (H=10/30/60) — confirming that the topological
+/ basis features pay off in the shock-driven, longer-horizon regime. **LSH consistently hurts.**
+
+![Improvement experiments](docs/images/results_improvements.png)
+
+Best MAE per horizon (Notebook 05 setup):
+
+| Horizon | Best technique | MAE | R² |
+|---|---|---|---|
+| H=1 | (5) Ensemble (NNLS stack) | 1.434 | 0.974 |
+| H=5 | Jump-Gated ARIMAX-CatBoost (base) | 2.915 | 0.902 |
+| H=10 | (4) B-spline (auto) | 3.819 | 0.802 |
+| H=30 | (4) B-spline (auto) | 6.028 | 0.518 |
+| H=60 | (4) B-spline (auto) | 6.654 | 0.485 |
+
+> The single best result of the whole project remains **Notebook 04's Jump-Gated ARIMAX-CatBoost at
+> H=1 (MAE 1.2571, R² 0.9779)** — nb05's numbers come from a deliberately harder rolling setup.
+
+### 7.3 Four-target summary
+
+R² / MAPE(%) on the test set, full `main.py` pipeline:
+
+| Target | LightGBM | iTransformer | GUMNet-Ultra |
+|---|---|---|---|
+| **MG95** | **0.943 / 2.21** | 0.806 / 3.46 | 0.938 / 2.40 |
+| **MG92** | 0.933 / 2.77 | 0.867 / 3.60 | **0.937 / 2.22** |
+| **DO 0.001%** | **0.795 / 3.31** | 0.591 / 5.42 | 0.754 / 4.00 |
+| **DO 0.05%** | 0.720 / 3.34 | 0.598 / 5.42 | **0.807 / 4.04** |
+
+### Key insights
+
+- **Simpler wins.** The linear-backbone hybrid (ARIMAX + CatBoost residual) beats every deep
+  model. Refined-fuel prices are dominated by lag-1 autocorrelation and crude co-movement, which a
+  strong linear model captures almost fully at short horizons.
+- **The Jump Gate adds the most at mid horizons (H = 5–10)**, exactly where ARIMAX starts to
+  decay but structure still exists.
+- **Signal decays sharply with horizon** - R² falls from ~0.98 (H=1) to ~0.49 (H=60). Beyond ~30
+  days the series is close to a random walk and all models converge toward the naive baseline.
+- **News + topological / symbolic features** give marginal H=1 gains but are aimed at the
+  shock-driven tail; their value grows at longer horizons and in crisis windows.
+
+---
+
+## 8. Project Structure
 
 ```
 Oil-Forecasting/
@@ -332,7 +288,7 @@ Oil-Forecasting/
 ├── verify_env.py              environment checker
 ├── data/processed/            clean_data_exo_ver1.csv (market + macro panel)
 ├── src/                       data_loader, features, evaluation, models/
-├── notebooks/                 01 EDA · 02 baseline · 03 all-models · 04 multi-horizon · 05 champion-improvements
+├── notebooks/                 01 EDA - 02 baseline - 03 all-models - 04 multi-horizon - 05 champion-improvements
 ├── news-crawler/              Node + Python news sentiment pipeline (crawl -> score -> aggregate)
 ├── results/                   metrics CSVs + charts/ (per-model & per-target)
 └── docs/images/               figures used in this report

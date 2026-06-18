@@ -167,7 +167,8 @@ def evaluate_multihorizon(model_fn,        # callable(X_test) -> y_pred (scaled)
 def plot_actual_vs_predicted(dates, y_true, y_pred,
                               model_name: str,
                               metrics: dict,
-                              save_path: str = None):
+                              save_path: str = None,
+                              target: str = "MG95"):
     fig, axes = plt.subplots(2, 1, figsize=(18, 11))
 
     axes[0].plot(dates, y_true, color="#2C3E50", lw=1.8,
@@ -177,11 +178,11 @@ def plot_actual_vs_predicted(dates, y_true, y_pred,
     axes[0].fill_between(dates, y_true, y_pred,
                          alpha=0.10, color="#E74C3C")
     axes[0].set_title(
-        f"Gia Xang MG95 - Thuc te vs Du bao | {model_name}\n"
+        f"Gia {target} - Thuc te vs Du bao | {model_name}\n"
         f"MAE={metrics['MAE']:.4f} | RMSE={metrics['RMSE']:.4f} | "
         f"MAPE={metrics['MAPE(%)']:.4f}% | R2={metrics['R2']:.4f}",
         fontsize=13, fontweight="bold")
-    axes[0].set_ylabel("Gia MG95 (nghin dong/lit)", fontsize=12)
+    axes[0].set_ylabel(f"Gia {target} (nghin dong/lit)", fontsize=12)
     axes[0].legend(fontsize=11)
     axes[0].xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
     axes[0].xaxis.set_major_locator(mdates.MonthLocator(interval=2))
@@ -215,7 +216,8 @@ def plot_actual_vs_predicted(dates, y_true, y_pred,
 
 def plot_multihorizon_bar(df_mh: pd.DataFrame,
                            model_name: str,
-                           save_path: str = None):
+                           save_path: str = None,
+                           target: str = "MG95"):
     """
     Bar chart the hien su phan ra tin hieu khi H tang.
     Chuon chuan danh gia theo GUMNet-WF.
@@ -241,7 +243,7 @@ def plot_multihorizon_bar(df_mh: pd.DataFrame,
         ax.set_ylabel(met)
 
     plt.suptitle(
-        f"Su phan ra tin hieu theo Horizon - {model_name}\n"
+        f"Su phan ra tin hieu theo Horizon - {target} - {model_name}\n"
         f"(Do chinh xac giam dan khi du bao cang xa)",
         fontsize=13, fontweight="bold")
     plt.tight_layout()
@@ -252,7 +254,8 @@ def plot_multihorizon_bar(df_mh: pd.DataFrame,
 
 
 def plot_walkforward(wf_results: list, df_summary: pd.DataFrame,
-                     save_path: str = None):
+                     save_path: str = None,
+                     target: str = "MG95"):
     """
     Ve bieu do Walk-Forward: du bao tren tung fold + MAE/R2 theo fold.
     """
@@ -269,7 +272,7 @@ def plot_walkforward(wf_results: list, df_summary: pd.DataFrame,
                  label=f"Fold {r['fold']} (MAPE={r['MAPE(%)']:.2f}%)")
     ax1.set_title("Walk-Forward Validation - Du bao tung Fold (Expanding Window)",
                   fontsize=13, fontweight="bold")
-    ax1.set_ylabel("MG95 (nghin dong/lit)")
+    ax1.set_ylabel(f"{target} (nghin dong/lit)")
     ax1.legend(fontsize=8, ncol=4, loc="upper left")
 
     ax2 = fig.add_subplot(gs[1, 0])
@@ -289,7 +292,7 @@ def plot_walkforward(wf_results: list, df_summary: pd.DataFrame,
     ax3.set_title("R2 theo Fold", fontsize=12, fontweight="bold")
     ax3.set_xlabel("Fold #"); ax3.set_ylabel("R2"); ax3.legend(fontsize=9)
 
-    plt.suptitle("Walk-Forward Validation - LightGBM (Optuna Tuned)",
+    plt.suptitle(f"Walk-Forward Validation - {target} - LightGBM (Optuna Tuned)",
                  fontsize=15, fontweight="bold")
     path = save_path or f"{CHARTS_DIR}/walk_forward.png"
     plt.savefig(path, dpi=150, bbox_inches="tight")
@@ -297,7 +300,8 @@ def plot_walkforward(wf_results: list, df_summary: pd.DataFrame,
     print(f"  [Chart] Da luu: {path}")
 
 
-def plot_model_comparison_bar(results: list, save_path: str = None):
+def plot_model_comparison_bar(results: list, save_path: str = None,
+                              target: str = "MG95"):
     """Bar chart so sanh MAE / RMSE / MAPE / R2 giua cac mo hinh."""
     df = pd.DataFrame([{k: v for k, v in r.items()
                          if k not in ["y_true", "y_pred"]}
@@ -319,7 +323,7 @@ def plot_model_comparison_bar(results: list, save_path: str = None):
         if met == "R2":
             ax.set_ylim(0, 1.15)
 
-    plt.suptitle("So sanh hieu nang cac mo hinh tren tap Test",
+    plt.suptitle(f"So sanh hieu nang cac mo hinh tren tap Test - {target}",
                  fontsize=14, fontweight="bold")
     plt.tight_layout()
     path = save_path or f"{CHARTS_DIR}/model_comparison.png"
