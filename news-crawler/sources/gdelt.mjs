@@ -33,9 +33,21 @@ async function fetchWindow(query, start, end) {
     query, mode: 'ArtList', format: 'json', maxrecords: '250', sort: 'datedesc',
     startdatetime: fmtStamp(start), enddatetime: fmtStamp(end),
   });
-  const r = await safeFetch(BASE + '?' + params, { timeout: 30000, retries: 2, backoffMs: 6000 });
-  if (!r.ok) return { error: r.error };
-  return r.data || {};
+  // GDELT returns HTTP 200 even for rate-limit / query errors (plain text body),
+  // so fetch as text and inspect before parsing.
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const r = await safeFetch(BASE + '?' + params, { timeout: 30000, retries: 1, backoffMs: 6000, parse: 'text' });
+    if (!r.ok) {
+      if (/\b429\b|please limit requests/i.test(r.error || '')) { await sleep(7000); continue; }  // HTTP 429 -> back off
+      return { error: r.error };
+    }
+    const txt = (r.text || '').trim();
+    if (/please limit requests/i.test(txt)) { await sleep(7000); continue; }  // 200 + rate-limit text -> back off
+    if (txt.startsWith('{')) { try { return JSON.parse(txt); } catch { return { error: 'bad json' }; } }
+    if (!txt) return {};                                   // empty -> no articles
+    return { error: txt.slice(0, 80) };                    // e.g. "The specified phrase is too short."
+  }
+  return { error: 'rate_limited (gave up after retries)' };
 }
 
 function capPerDay(rows, perDay) {

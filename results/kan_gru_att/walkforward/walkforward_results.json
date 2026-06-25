@@ -1,0 +1,562 @@
+{
+  "1": {
+    "horizon": 1,
+    "overall": {
+      "MAE": 4.5076,
+      "RMSE": 8.917,
+      "MAPE": 3.0594,
+      "SMAPE": 3.0735,
+      "R2": 0.9652,
+      "n": 110
+    },
+    "per_target": {
+      "MG95": {
+        "MAE": 3.166,
+        "RMSE": 5.8043,
+        "MAPE": 2.6447,
+        "SMAPE": 2.6485,
+        "R2": 0.9661
+      },
+      "MG92": {
+        "MAE": 3.0046,
+        "RMSE": 5.3394,
+        "MAPE": 2.6295,
+        "SMAPE": 2.6447,
+        "R2": 0.9655
+      },
+      "DO 0.001%": {
+        "MAE": 5.9498,
+        "RMSE": 11.3476,
+        "MAPE": 3.4464,
+        "SMAPE": 3.4679,
+        "R2": 0.962
+      },
+      "DO 0.05%": {
+        "MAE": 5.9099,
+        "RMSE": 11.2732,
+        "MAPE": 3.5172,
+        "SMAPE": 3.5328,
+        "R2": 0.9583
+      }
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "best_epoch": 18,
+        "val_MAPE": 1.2116,
+        "test_MAPE": 0.8443,
+        "n": 22
+      },
+      {
+        "fold": 1,
+        "best_epoch": 14,
+        "val_MAPE": 1.1039,
+        "test_MAPE": 1.4077,
+        "n": 22
+      },
+      {
+        "fold": 2,
+        "best_epoch": 18,
+        "val_MAPE": 1.2039,
+        "test_MAPE": 2.7723,
+        "n": 22
+      },
+      {
+        "fold": 3,
+        "best_epoch": 18,
+        "val_MAPE": 1.7628,
+        "test_MAPE": 7.1111,
+        "n": 22
+      },
+      {
+        "fold": 4,
+        "best_epoch": 21,
+        "val_MAPE": 3.9715,
+        "test_MAPE": 3.1619,
+        "n": 22
+      }
+    ],
+    "n_test_total": 110,
+    "wf_sec": 117.0
+  },
+  "5": {
+    "horizon": 5,
+    "overall": {
+      "MAE": 11.0914,
+      "RMSE": 19.9543,
+      "MAPE": 7.5078,
+      "SMAPE": 7.7492,
+      "R2": 0.8257,
+      "n": 110
+    },
+    "per_target": {
+      "MG95": {
+        "MAE": 7.7741,
+        "RMSE": 12.7245,
+        "MAPE": 6.3898,
+        "SMAPE": 6.622,
+        "R2": 0.837
+      },
+      "MG92": {
+        "MAE": 6.852,
+        "RMSE": 10.8637,
+        "MAPE": 5.9531,
+        "SMAPE": 6.1805,
+        "R2": 0.8573
+      },
+      "DO 0.001%": {
+        "MAE": 14.7853,
+        "RMSE": 24.9422,
+        "MAPE": 8.6537,
+        "SMAPE": 8.982,
+        "R2": 0.8164
+      },
+      "DO 0.05%": {
+        "MAE": 14.9543,
+        "RMSE": 26.2801,
+        "MAPE": 9.0345,
+        "SMAPE": 9.2121,
+        "R2": 0.7734
+      }
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "best_epoch": 19,
+        "val_MAPE": 2.7115,
+        "test_MAPE": 2.1892,
+        "n": 22
+      },
+      {
+        "fold": 1,
+        "best_epoch": 28,
+        "val_MAPE": 2.8328,
+        "test_MAPE": 2.3964,
+        "n": 22
+      },
+      {
+        "fold": 2,
+        "best_epoch": 21,
+        "val_MAPE": 2.4567,
+        "test_MAPE": 7.8652,
+        "n": 22
+      },
+      {
+        "fold": 3,
+        "best_epoch": 25,
+        "val_MAPE": 4.2146,
+        "test_MAPE": 14.1886,
+        "n": 22
+      },
+      {
+        "fold": 4,
+        "best_epoch": 19,
+        "val_MAPE": 8.6895,
+        "test_MAPE": 10.8995,
+        "n": 22
+      }
+    ],
+    "n_test_total": 110,
+    "wf_sec": 147.5
+  },
+  "10": {
+    "horizon": 10,
+    "overall": {
+      "MAE": 16.7584,
+      "RMSE": 30.2408,
+      "MAPE": 11.1354,
+      "SMAPE": 11.8268,
+      "R2": 0.5996,
+      "n": 110
+    },
+    "per_target": {
+      "MG95": {
+        "MAE": 10.7569,
+        "RMSE": 19.0756,
+        "MAPE": 8.5689,
+        "SMAPE": 9.3245,
+        "R2": 0.6337
+      },
+      "MG92": {
+        "MAE": 9.2878,
+        "RMSE": 16.3753,
+        "MAPE": 7.8993,
+        "SMAPE": 8.5711,
+        "R2": 0.6757
+      },
+      "DO 0.001%": {
+        "MAE": 23.2969,
+        "RMSE": 38.2914,
+        "MAPE": 13.7278,
+        "SMAPE": 14.5351,
+        "R2": 0.5674
+      },
+      "DO 0.05%": {
+        "MAE": 23.6919,
+        "RMSE": 39.4939,
+        "MAPE": 14.3456,
+        "SMAPE": 14.8764,
+        "R2": 0.4883
+      }
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "best_epoch": 10,
+        "val_MAPE": 3.4591,
+        "test_MAPE": 4.0271,
+        "n": 22
+      },
+      {
+        "fold": 1,
+        "best_epoch": 24,
+        "val_MAPE": 4.1229,
+        "test_MAPE": 2.9341,
+        "n": 22
+      },
+      {
+        "fold": 2,
+        "best_epoch": 20,
+        "val_MAPE": 3.7112,
+        "test_MAPE": 8.2695,
+        "n": 22
+      },
+      {
+        "fold": 3,
+        "best_epoch": 22,
+        "val_MAPE": 5.3173,
+        "test_MAPE": 24.5088,
+        "n": 22
+      },
+      {
+        "fold": 4,
+        "best_epoch": 24,
+        "val_MAPE": 12.9713,
+        "test_MAPE": 15.9375,
+        "n": 22
+      }
+    ],
+    "n_test_total": 110,
+    "wf_sec": 140.2
+  },
+  "15": {
+    "horizon": 15,
+    "overall": {
+      "MAE": 23.0183,
+      "RMSE": 38.8282,
+      "MAPE": 15.1978,
+      "SMAPE": 16.6429,
+      "R2": 0.3399,
+      "n": 110
+    },
+    "per_target": {
+      "MG95": {
+        "MAE": 15.4389,
+        "RMSE": 25.5823,
+        "MAPE": 12.2571,
+        "SMAPE": 13.4525,
+        "R2": 0.3411
+      },
+      "MG92": {
+        "MAE": 13.5662,
+        "RMSE": 22.2638,
+        "MAPE": 11.3929,
+        "SMAPE": 12.511,
+        "R2": 0.4005
+      },
+      "DO 0.001%": {
+        "MAE": 31.4251,
+        "RMSE": 48.8802,
+        "MAPE": 18.3061,
+        "SMAPE": 20.2286,
+        "R2": 0.295
+      },
+      "DO 0.05%": {
+        "MAE": 31.6431,
+        "RMSE": 49.9112,
+        "MAPE": 18.835,
+        "SMAPE": 20.3794,
+        "R2": 0.1828
+      }
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "best_epoch": 13,
+        "val_MAPE": 4.0474,
+        "test_MAPE": 7.1494,
+        "n": 22
+      },
+      {
+        "fold": 1,
+        "best_epoch": 14,
+        "val_MAPE": 5.7416,
+        "test_MAPE": 3.2944,
+        "n": 22
+      },
+      {
+        "fold": 2,
+        "best_epoch": 10,
+        "val_MAPE": 4.8944,
+        "test_MAPE": 9.9745,
+        "n": 22
+      },
+      {
+        "fold": 3,
+        "best_epoch": 21,
+        "val_MAPE": 6.2192,
+        "test_MAPE": 34.1638,
+        "n": 22
+      },
+      {
+        "fold": 4,
+        "best_epoch": 92,
+        "val_MAPE": 16.2364,
+        "test_MAPE": 21.4068,
+        "n": 22
+      }
+    ],
+    "n_test_total": 110,
+    "wf_sec": 162.1
+  },
+  "20": {
+    "horizon": 20,
+    "overall": {
+      "MAE": 27.8913,
+      "RMSE": 45.9404,
+      "MAPE": 18.4172,
+      "SMAPE": 20.5907,
+      "R2": 0.076,
+      "n": 110
+    },
+    "per_target": {
+      "MG95": {
+        "MAE": 17.8727,
+        "RMSE": 28.8255,
+        "MAPE": 14.2371,
+        "SMAPE": 16.0957,
+        "R2": 0.1635
+      },
+      "MG92": {
+        "MAE": 15.5482,
+        "RMSE": 25.3429,
+        "MAPE": 13.0402,
+        "SMAPE": 14.8409,
+        "R2": 0.2232
+      },
+      "DO 0.001%": {
+        "MAE": 39.1026,
+        "RMSE": 58.7154,
+        "MAPE": 22.9742,
+        "SMAPE": 25.7165,
+        "R2": -0.0172
+      },
+      "DO 0.05%": {
+        "MAE": 39.0419,
+        "RMSE": 59.3415,
+        "MAPE": 23.4175,
+        "SMAPE": 25.7098,
+        "R2": -0.1552
+      }
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "best_epoch": 11,
+        "val_MAPE": 4.1075,
+        "test_MAPE": 9.3057,
+        "n": 22
+      },
+      {
+        "fold": 1,
+        "best_epoch": 7,
+        "val_MAPE": 6.5045,
+        "test_MAPE": 4.5225,
+        "n": 22
+      },
+      {
+        "fold": 2,
+        "best_epoch": 8,
+        "val_MAPE": 6.4479,
+        "test_MAPE": 11.8815,
+        "n": 22
+      },
+      {
+        "fold": 3,
+        "best_epoch": 17,
+        "val_MAPE": 8.2191,
+        "test_MAPE": 42.6045,
+        "n": 22
+      },
+      {
+        "fold": 4,
+        "best_epoch": 19,
+        "val_MAPE": 20.5081,
+        "test_MAPE": 23.7721,
+        "n": 22
+      }
+    ],
+    "n_test_total": 110,
+    "wf_sec": 101.4
+  },
+  "30": {
+    "horizon": 30,
+    "overall": {
+      "MAE": 31.9699,
+      "RMSE": 51.9278,
+      "MAPE": 21.3278,
+      "SMAPE": 25.566,
+      "R2": -0.1806,
+      "n": 110
+    },
+    "per_target": {
+      "MG95": {
+        "MAE": 22.6637,
+        "RMSE": 34.2512,
+        "MAPE": 18.2295,
+        "SMAPE": 21.4083,
+        "R2": -0.1811
+      },
+      "MG92": {
+        "MAE": 20.2093,
+        "RMSE": 31.1211,
+        "MAPE": 17.0577,
+        "SMAPE": 20.2373,
+        "R2": -0.1714
+      },
+      "DO 0.001%": {
+        "MAE": 43.1812,
+        "RMSE": 66.6923,
+        "MAPE": 25.1483,
+        "SMAPE": 30.7103,
+        "R2": -0.3124
+      },
+      "DO 0.05%": {
+        "MAE": 41.8253,
+        "RMSE": 64.78,
+        "MAPE": 24.8757,
+        "SMAPE": 29.9083,
+        "R2": -0.3767
+      }
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "best_epoch": 14,
+        "val_MAPE": 3.4571,
+        "test_MAPE": 12.1392,
+        "n": 22
+      },
+      {
+        "fold": 1,
+        "best_epoch": 9,
+        "val_MAPE": 6.4802,
+        "test_MAPE": 6.8065,
+        "n": 22
+      },
+      {
+        "fold": 2,
+        "best_epoch": 7,
+        "val_MAPE": 7.6064,
+        "test_MAPE": 14.3616,
+        "n": 22
+      },
+      {
+        "fold": 3,
+        "best_epoch": 9,
+        "val_MAPE": 11.1634,
+        "test_MAPE": 52.0524,
+        "n": 22
+      },
+      {
+        "fold": 4,
+        "best_epoch": 12,
+        "val_MAPE": 25.8371,
+        "test_MAPE": 21.2793,
+        "n": 22
+      }
+    ],
+    "n_test_total": 110,
+    "wf_sec": 98.4
+  },
+  "60": {
+    "horizon": 60,
+    "overall": {
+      "MAE": 39.6262,
+      "RMSE": 60.4823,
+      "MAPE": 25.8682,
+      "SMAPE": 33.4431,
+      "R2": -0.6016,
+      "n": 110
+    },
+    "per_target": {
+      "MG95": {
+        "MAE": 30.238,
+        "RMSE": 42.5329,
+        "MAPE": 23.7982,
+        "SMAPE": 29.5358,
+        "R2": -0.8213
+      },
+      "MG92": {
+        "MAE": 28.0565,
+        "RMSE": 40.5965,
+        "MAPE": 22.5624,
+        "SMAPE": 28.5826,
+        "R2": -0.9934
+      },
+      "DO 0.001%": {
+        "MAE": 52.1756,
+        "RMSE": 77.1143,
+        "MAPE": 29.3229,
+        "SMAPE": 38.9779,
+        "R2": -0.7546
+      },
+      "DO 0.05%": {
+        "MAE": 48.0349,
+        "RMSE": 72.3096,
+        "MAPE": 27.7892,
+        "SMAPE": 36.676,
+        "R2": -0.7153
+      }
+    },
+    "folds": [
+      {
+        "fold": 0,
+        "best_epoch": 10,
+        "val_MAPE": 3.876,
+        "test_MAPE": 7.8694,
+        "n": 22
+      },
+      {
+        "fold": 1,
+        "best_epoch": 5,
+        "val_MAPE": 5.5326,
+        "test_MAPE": 8.1227,
+        "n": 22
+      },
+      {
+        "fold": 2,
+        "best_epoch": 1,
+        "val_MAPE": 6.3219,
+        "test_MAPE": 10.9481,
+        "n": 22
+      },
+      {
+        "fold": 3,
+        "best_epoch": 1,
+        "val_MAPE": 8.8719,
+        "test_MAPE": 56.1666,
+        "n": 22
+      },
+      {
+        "fold": 4,
+        "best_epoch": 15,
+        "val_MAPE": 26.8306,
+        "test_MAPE": 46.234,
+        "n": 22
+      }
+    ],
+    "n_test_total": 110,
+    "wf_sec": 81.4
+  }
+}

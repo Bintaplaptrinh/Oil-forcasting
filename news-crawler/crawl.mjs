@@ -13,7 +13,7 @@
 //   node crawl.mjs --topics=war,natural_disaster
 //   node crawl.mjs --merge-only            # rebuild combined CSV only
 //
-// Flags: --source (all|fed|oilprice|gdelt|cnbc|opec) --from --to --per-day
+// Flags: --source (all|fed|oilprice|gdelt|cnbc|opec|gkg) --from --to --per-day
 //        --chunk-days --domain-chunk-days --topics --out --merge-only
 
 import { mkdirSync, existsSync, readFileSync, writeFileSync, createReadStream, readdirSync } from 'node:fs';
@@ -26,6 +26,7 @@ import { CsvAppender, COLUMNS, rowToLine } from './lib/csv.mjs';
 import { crawlGdelt } from './sources/gdelt.mjs';
 import { crawlOilprice } from './sources/oilprice.mjs';
 import { crawlFed } from './sources/fed.mjs';
+import { crawlGkg } from './sources/gkg.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -53,6 +54,7 @@ const OILPRICE_CSV = join(OUT, 'oilprice_news.csv');
 const GDELT_CSV = join(OUT, 'gdelt_news.csv');
 const CNBC_CSV = join(OUT, 'cnbc_gdelt_news.csv');
 const OPEC_CSV = join(OUT, 'opec_gdelt_news.csv');
+const GKG_CSV = join(OUT, 'gkg_news.csv');
 const COMBINED_CSV = join(OUT, 'combined_news.csv');
 const CKPT = join(OUT, 'checkpoint.json');
 
@@ -166,6 +168,14 @@ async function main() {
     const res = await crawlGdelt({ topics, from: gdeltFrom, to: TO, chunkDays: DOMAIN_CHUNK, perDay: PER_DAY, domain: 'opec.org', sourceLabel: 'OPEC (GDELT)', idPrefix: 'opec', seenUrls, checkpoint, onRow: (r) => csv.write(r) });
     await csv.close();
     console.error('OPEC done: ' + res.written + ' rows, ' + res.calls + ' requests');
+  }
+
+  if (want('gkg')) {
+    banner('GKG (GDELT Global Knowledge Graph: OPEC+/conflict/sanctions + OPEC countries, ' + gdeltFrom.toISOString().slice(0, 10) + '+)');
+    const csv = new CsvAppender(GKG_CSV);
+    const res = await crawlGkg({ from: gdeltFrom, to: TO, chunkDays: CHUNK_DAYS, perDay: PER_DAY, domainChunkDays: DOMAIN_CHUNK, seenUrls, checkpoint, onRow: (r) => csv.write(r) });
+    await csv.close();
+    console.error('GKG done: ' + res.written + ' rows, ' + res.calls + ' requests');
   }
 
   writeFileSync(CKPT, JSON.stringify([...done]));

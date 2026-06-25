@@ -28,3 +28,10 @@ Thumbs.db
 # Report source files (publish PDF only)
 *.docx
 ~$*.docx
+
+# paper
+paper/
+.agent/
+.claude/
+crucix/
+

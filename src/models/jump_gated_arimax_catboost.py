@@ -31,6 +31,22 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 
 DEFAULT_EXOG_COLS = ["WTI", "USD_Index", "GPR", "BRT DTD", "Brent_EU_Daily"]
+CHAMPION_EXOG_COLS = ["WTI", "USD_Index", "GPR", "BRT DTD", "BRT KH", "Brent_EU_Daily", "NAPHTHA"]
+NEWS_SIGNAL_COLS = [
+    "all_n",
+    "all_sent_mean",
+    "all_sent_sum",
+    "all_intensity",
+    "war_n",
+    "war_sent_sum",
+    "war_intensity",
+    "political_economy_n",
+    "political_economy_sent_sum",
+    "political_economy_intensity",
+    "natural_disaster_n",
+    "natural_disaster_sent_sum",
+    "natural_disaster_intensity",
+]
 
 
 @dataclass
@@ -66,6 +82,77 @@ def regression_metrics(y_true: Iterable[float], y_pred: Iterable[float], name: s
     }
 
 
+def add_news_lag_features(
+    df: pd.DataFrame,
+    *,
+    news_path: str | Path | None,
+    lag_days: Iterable[int] = (1, 3, 7, 14),
+    rolling_windows: Iterable[int] = (3, 7, 14),
+    news_cols: Iterable[str] = NEWS_SIGNAL_COLS,
+) -> tuple[pd.DataFrame, list[str]]:
+    """Join daily news and create lag/rolling-lag features used by the champion trial."""
+    out = df.copy()
+    if news_path is None or not Path(news_path).exists():
+        return out, []
+
+    news = pd.read_csv(news_path, parse_dates=["date"]).set_index("date")
+    news = news[~news.index.duplicated(keep="last")].sort_index()
+    news = news.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+
+    base_cols = [c for c in news_cols if c in news.columns]
+    if not base_cols:
+        return out, []
+
+    engineered = pd.DataFrame(index=news.index)
+    for c in base_cols:
+        s = pd.to_numeric(news[c], errors="coerce").fillna(0.0)
+        for lag in lag_days:
+            engineered[f"{c}_lag{lag}"] = s.shift(lag).fillna(0.0)
+        for window in rolling_windows:
+            col = f"{c}_roll{window}_lag1"
+            engineered[col] = s.shift(1).rolling(window, min_periods=1).sum().fillna(0.0)
+
+    missing_cols = [c for c in engineered.columns if c not in out.columns]
+    if missing_cols:
+        out = out.join(engineered[missing_cols], how="left")
+        out[missing_cols] = out[missing_cols].fillna(0.0)
+    return out, missing_cols
+
+
+def load_champion_frame(
+    *,
+    root: str | Path,
+    data_path: str | Path | None = None,
+    news_path: str | Path | None = None,
+    date_col: str = "Ngày",
+    drop_initial_rows: int = 30,
+) -> pd.DataFrame:
+    """
+    Load raw price/exogenous data and add only the news lag/rolling features
+    that improved the champion multi-horizon experiment.
+
+    The first rows are dropped to align with the original notebooks after their
+    lag/rolling feature engineering.
+    """
+    root = Path(root)
+    data_path = Path(data_path) if data_path is not None else root / "data" / "processed" / "clean_data_exo_ver1.csv"
+    news_path = Path(news_path) if news_path is not None else root / "news-crawler" / "data" / "daily_features.csv"
+
+    df = pd.read_csv(data_path)
+    df.columns = df.columns.astype(str).str.replace(r"\s+", " ", regex=True).str.strip()
+    if date_col not in df.columns:
+        raise ValueError(f"Missing date column {date_col!r}. Columns: {list(df.columns)}")
+
+    df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
+    df = df.dropna(subset=[date_col]).sort_values(date_col).set_index(date_col)
+    df = df.replace([np.inf, -np.inf], np.nan).ffill().bfill()
+
+    df, _ = add_news_lag_features(df, news_path=news_path)
+    if drop_initial_rows > 0:
+        df = df.iloc[int(drop_initial_rows):].copy()
+    return df
+
+
 def add_shock_features(
     df: pd.DataFrame,
     *,
@@ -97,12 +184,19 @@ def add_shock_features(
             "all_intensity",
             "political_economy_n",
             "political_economy_sent_sum",
+            "political_economy_intensity",
             "war_n",
             "war_sent_sum",
+            "war_intensity",
+            "natural_disaster_n",
+            "natural_disaster_sent_sum",
+            "natural_disaster_intensity",
         ]:
             if c in out.columns:
                 for w in [3, 7, 14]:
                     out[f"{c}_roll{w}"] = out[c].rolling(w, min_periods=1).sum()
+
+        out, _ = add_news_lag_features(out, news_path=news_path)
 
     price_delta = out[target].diff().fillna(0.0)
     changed = price_delta.abs() > 1e-9
